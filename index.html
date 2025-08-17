@@ -103,27 +103,36 @@
       chatBox.appendChild(msg);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
+    <script>
+  function getBotResponse(input) {
+    input = input.toLowerCase();
 
-    function getBotReply(userMsg) {
-      userMsg = userMsg.toLowerCase();
-      if (userMsg.includes("hello")) return "Hi there 👋";
-      if (userMsg.includes("how are you")) return "I’m doing great, thanks!";
-      if (userMsg.includes("bye")) return "Goodbye 👋 Have a nice day!";
-      return "Hmm 🤔 I didn’t understand that.";
-      if (text.includes("i'm heraab")) return "nice to meet you, heraab! 😊";
+    if (input.includes("hello") || input.includes("hi")) {
+      return "Hi there 👋";
+    } else if (input.includes("how are you")) {
+      return "I'm just a bot, but I'm doing great! 😃";
+    } else if (input.includes("i'm heraab") || input.includes("i am heraab")) {
+      return "Nice to meet you, Heraab! 😃";
+    } else {
+      return "Hmm 🤔 I didn't understand that.";
     }
-    sendBtn.addEventListener("click", () => {
-      const userMsg = inputField.value.trim();
-      if (!userMsg) return;
+  }
 
-      addMessage("user", userMsg);
-      inputField.value = "";
+  const form = document.querySelector("form");
+  const input = document.querySelector("input");
+  const messages = document.querySelector(".messages");
 
-      setTimeout(() => {
-        const reply = getBotReply(userMsg);
-        addMessage("bot", reply);
-      }, 600);
-    });
-  </script>
-</body>
-</html>
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const text = input.value;
+    if (!text) return;
+
+    messages.innerHTML += `<div class="message user">${text}</div>`;
+    input.value = "";
+
+    setTimeout(() => {
+      const reply = getBotResponse(text);
+      messages.innerHTML += `<div class="message bot">${reply}</div>`;
+    }, 500);
+  });
+</script>
