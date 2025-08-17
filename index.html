@@ -7,104 +7,123 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f6f9;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+      background: #f5f6fa;
     }
     .chat-container {
       width: 350px;
       height: 500px;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      border: 1px solid #ccc;
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     .chat-header {
-      background: #4a90e2;
+      background: #007bff;
       color: white;
+      padding: 10px;
       text-align: center;
-      padding: 15px;
-      font-size: 18px;
+      border-radius: 12px 12px 0 0;
       font-weight: bold;
     }
-    .chat-messages {
+    .chat-box {
       flex: 1;
       padding: 10px;
       overflow-y: auto;
     }
-    .message {
-      margin: 8px 0;
-      padding: 10px;
-      border-radius: 10px;
-      max-width: 80%;
-    }
-    .user {
-      background: #4a90e2;
-      color: white;
-      align-self: flex-end;
-    }
-    .bot {
-      background: #e5e5ea;
-      align-self: flex-start;
-    }
     .chat-input {
       display: flex;
-      border-top: 1px solid #ddd;
+      border-top: 1px solid #ccc;
     }
     .chat-input input {
       flex: 1;
       padding: 10px;
       border: none;
       outline: none;
+      border-radius: 0 0 0 12px;
     }
     .chat-input button {
-      padding: 10px 15px;
-      border: none;
-      background: #4a90e2;
+      background: #007bff;
       color: white;
+      border: none;
+      padding: 10px 15px;
       cursor: pointer;
+      border-radius: 0 0 12px 0;
+    }
+    .user {
+      text-align: right;
+      background: #007bff;
+      color: white;
+      padding: 8px 12px;
+      margin: 5px;
+      border-radius: 12px;
+      display: inline-block;
+      max-width: 70%;
+      float: right;
+      clear: both;
+    }
+    .bot {
+      text-align: left;
+      background: #e5e5e5;
+      color: black;
+      padding: 8px 12px;
+      margin: 5px;
+      border-radius: 12px;
+      display: inline-block;
+      max-width: 70%;
+      float: left;
+      clear: both;
     }
   </style>
 </head>
 <body>
   <div class="chat-container">
     <div class="chat-header">HerabChat 💬</div>
-    <div class="chat-messages" id="chatMessages">
-      <div class="message bot">Hello! 👋 Welcome to HerabChat.</div>
-    </div>
+    <div class="chat-box"></div>
     <div class="chat-input">
-      <input type="text" id="userInput" placeholder="Type a message..." />
-      <button onclick="sendMessage()">Send</button>
+      <input type="text" placeholder="Type a message..." />
+      <button>Send</button>
     </div>
   </div>
-
   <script>
-    function sendMessage() {
-      const input = document.getElementById("userInput");
-      const messages = document.getElementById("chatMessages");
-      
-      if (input.value.trim() === "") return;
-      
-      // User message
-      const userMsg = document.createElement("div");
-      userMsg.className = "message user";
-      userMsg.textContent = input.value;
-      messages.appendChild(userMsg);
+    const chatBox = document.querySelector(".chat-box");
+    const inputField = document.querySelector("input");
+    const sendBtn = document.querySelector("button");
 
-      // Bot reply
-      const botMsg = document.createElement("div");
-      botMsg.className = "message bot";
-      botMsg.textContent = "You said: " + input.value;
-      messages.appendChild(botMsg);
-
-      input.value = "";
-      messages.scrollTop = messages.scrollHeight;
+    function addMessage(sender, text) {
+      const msg = document.createElement("div");
+      msg.classList.add(sender);
+      msg.innerText = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
+
+    function getBotReply(userMsg) {
+      userMsg = userMsg.toLowerCase();
+      if (userMsg.includes("hello")) return "Hi there 👋";
+      if (userMsg.includes("how are you")) return "I’m doing great, thanks!";
+      if (userMsg.includes("bye")) return "Goodbye 👋 Have a nice day!";
+      return "Hmm 🤔 I didn’t understand that.";
+    }
+
+    sendBtn.addEventListener("click", () => {
+      const userMsg = inputField.value.trim();
+      if (!userMsg) return;
+
+      addMessage("user", userMsg);
+      inputField.value = "";
+
+      setTimeout(() => {
+        const reply = getBotReply(userMsg);
+        addMessage("bot", reply);
+      }, 600);
+    });
   </script>
 </body>
 </html>
