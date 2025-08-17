@@ -110,9 +110,7 @@
       if (userMsg.includes("how are you")) return "I’m doing great, thanks!";
       if (userMsg.includes("bye")) return "Goodbye 👋 Have a nice day!";
       return "Hmm 🤔 I didn’t understand that.";
-      else if (text.includes("i'm heraab") || text.includes("i am heraab")) {
-  return "Nice to meet you, Heraab! 😃";
-      }
+      if (text.includes("i'm heraab")) return "nice to meet you, heraab! 😊";
     }
 
     sendBtn.addEventListener("click", () => {
