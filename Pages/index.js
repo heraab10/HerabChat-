@@ -1,20 +1,24 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function Home() {
   const [messages, setMessages] = useState([
-    { role: "assistant", content: "👋 Hi, I’m HerabChat! How can I help you today?" }
+    { sender: "bot", text: "👋 Hello, I'm HerabChat. How can I help you today?" }
   ]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
-  const sendMessage = async (e) => {
-    e.preventDefault();
+  // Auto scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // Send message to API
+  const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const newMessages = [...messages, { role: "user", content: input }];
-    setMessages(newMessages);
+    const userMessage = { sender: "user", text: input };
+    setMessages((prev) => [...prev, userMessage]);
     setInput("");
-    setLoading(true);
 
     try {
       const res = await fetch("/api/chat", {
@@ -22,49 +26,103 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),
       });
-
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+
+      const botMessage = { sender: "bot", text: data.reply };
+      setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
-      setMessages((prev) => [...prev, { role: "assistant", content: "⚠️ Error: something went wrong" }]);
-    } finally {
-      setLoading(false);
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: "⚠️ Sorry, something went wrong." },
+      ]);
     }
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px", fontFamily: "Arial" }}>
-      <h1 style={{ textAlign: "center" }}>💬 HerabChat</h1>
-      <div style={{ border: "1px solid #ccc", borderRadius: "10px", padding: "10px", height: "400px", overflowY: "auto" }}>
+    <div style={styles.container}>
+      <h1 style={styles.header}>💬 HerabChat</h1>
+      <div style={styles.chatBox}>
         {messages.map((msg, i) => (
-          <div key={i} style={{ margin: "10px 0", textAlign: msg.role === "user" ? "right" : "left" }}>
-            <span
-              style={{
-                display: "inline-block",
-                padding: "8px 12px",
-                borderRadius: "15px",
-                background: msg.role === "user" ? "#007bff" : "#f1f1f1",
-                color: msg.role === "user" ? "white" : "black",
-              }}
-            >
-              {msg.content}
-            </span>
+          <div
+            key={i}
+            style={{
+              ...styles.message,
+              alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
+              background: msg.sender === "user" ? "#4f46e5" : "#e5e7eb",
+              color: msg.sender === "user" ? "white" : "black",
+            }}
+          >
+            {msg.text}
           </div>
         ))}
-        {loading && <p>⏳ Thinking...</p>}
+        <div ref={messagesEndRef} />
       </div>
-      <form onSubmit={sendMessage} style={{ display: "flex", marginTop: "10px" }}>
+      <div style={styles.inputBox}>
         <input
-          type="text"
+          style={styles.input}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type your message..."
-          style={{ flex: 1, padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
-        <button type="submit" style={{ marginLeft: "10px", padding: "10px 20px", borderRadius: "5px", background: "#007bff", color: "white", border: "none" }}>
-          Send
+        <button style={styles.button} onClick={sendMessage}>
+          ➤
         </button>
-      </form>
+      </div>
     </div>
   );
-          }
+}
+
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100vh",
+    maxWidth: "600px",
+    margin: "0 auto",
+    padding: "20px",
+    fontFamily: "Arial, sans-serif",
+  },
+  header: {
+    textAlign: "center",
+    marginBottom: "10px",
+    color: "#4f46e5",
+  },
+  chatBox: {
+    flex: 1,
+    overflowY: "auto",
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    background: "white",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+  },
+  message: {
+    padding: "10px 15px",
+    borderRadius: "15px",
+    maxWidth: "75%",
+    wordWrap: "break-word",
+  },
+  inputBox: {
+    display: "flex",
+    marginTop: "10px",
+  },
+  input: {
+    flex: 1,
+    padding: "10px",
+    borderRadius: "10px",
+    border: "1px solid #ddd",
+    outline: "none",
+  },
+  button: {
+    marginLeft: "10px",
+    padding: "10px 15px",
+    background: "#4f46e5",
+    color: "white",
+    border: "none",
+    borderRadius: "10px",
+    cursor: "pointer",
+  },
+};
