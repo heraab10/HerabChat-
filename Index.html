@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HerabChat</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    #chat-container { width: 400px; background: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+    #messages { flex: 1; padding: 15px; overflow-y: auto; border-bottom: 1px solid #ddd; }
+    .message { margin: 5px 0; padding: 8px 12px; border-radius: 6px; }
+    .user { background: #0078ff; color: white; text-align: right; }
+    .bot { background: #e5e5ea; text-align: left; }
+    #input-area { display: flex; padding: 10px; }
+    input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+    button { margin-left: 10px; padding: 10px 15px; border: none; background: #0078ff; color: white; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #005ecb; }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <div id="messages"></div>
+    <div id="input-area">
+      <input id="user-input" type="text" placeholder="Type a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script src="chat.js"></script>
+</body>
+</html>
